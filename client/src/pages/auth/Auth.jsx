@@ -6,45 +6,99 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { apiClient } from "@/lib/api-client";
-import { SIGNUP_ROUTE } from "@/utils/constants";
+import { LOGIN_ROUTE, SIGNUP_ROUTE } from "@/utils/constants";
+import { useNavigate } from "react-router-dom";
 
 export default function Auth() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const validateSignup = () =>{
+  const navigate = useNavigate()
+  const [formState , setFormState] = useState({
+    email : "",
+    password : "",
+    confirmPassword : "",
+  })
+
+  const [activeTab , setActiveTab] = useState("login") 
+
+  const handleInputChange = (field,value) =>{
+    setFormState((prev)=> ({...prev, [field] : value}))
+  }
+
+  const validateForm = () =>{
+    const {email , password , confirmPassword } = formState
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*\d).{6,}$/;
+
+
     if(!email.length){
       toast.error("Email is required")
       return false
+    }
+
+    if (!emailRegex.test(email)) {
+      toast.error("Invalid email format");
+      return false;
     }
     if(!password.length){
       toast.error("Password is required")
       return false
     }
 
-    if(password !== confirmPassword){
+    if (!passwordRegex.test(password)) {
+      toast.error("Password must be at least 6 characters long, include an uppercase letter, a number, and a special character.");
+      return false;
+    }
+
+    if(activeTab === "signup" && password !== confirmPassword){
       toast.error("Password and confirm password should be same")
       return false
     }
     return true
   } 
 
-  const handleLogin = async ()=>{
+  const handleSubmit = async ()=>{
 
-  }
+    const {email , password , confirmPassword} = formState
 
-  const handleSignup = async ()=>{
-    if(validateSignup()){
-      const response = await apiClient.post(SIGNUP_ROUTE,{
-        email : email,
-        password : password,
-        confirmPassword : confirmPassword,
-        
-      })
-      console.log(response.data)
-      toast.success("Signup Successful")
+    if(!validateForm()){
+      return;
     }
+
+    try {
+
+      const route = activeTab === "login" ? LOGIN_ROUTE : SIGNUP_ROUTE ;
+
+      const payload = activeTab === "login" ? {email , password} : {email, password, confirmPassword};
+      
+        const response = await apiClient.post(route,payload, {withCredentials: true})
+
+        if(response.data.user.id){
+          if(response.data.user.profileSetup){
+            navigate("/chat")
+          }else(
+            navigate("/profile")
+          )
+        }
+
+        console.log(response.data)
+        toast.success(`${activeTab === "login" ? "Login" : "Signup"} Successful`)
+
+        if(activeTab === "signup"){
+          setActiveTab("login")
+        }
+      }catch(error){
+        const errorMessage =
+      error.response?.data ||  
+      error.message ||           
+      "Something went wrong"; 
+        toast.error(errorMessage)
+      }
+
+    
+      
+    
   }
   
 
@@ -72,29 +126,29 @@ export default function Auth() {
             </p>
           <div className="flex items-center justify-center w-full">
 
-            <Tabs className="w-3/4">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-3/4">
               <TabsList className="bg-transparent rounded-none w-full">
                 <TabsTrigger className="data-[state=active]:bg-transparent text-black text-opacity-90 border-b-2 rounded-none w-full data-[state=active]:text-black data-[state=active]:font-semibold data-[state=active]:border-b-purple-500 p-3 transition-all duration-300" value="login">Login</TabsTrigger>
                 <TabsTrigger className="data-[state=active]:bg-transparent text-black text-opacity-90 border-b-2 rounded-none w-full data-[state=active]:text-black data-[state=active]:font-semibold data-[state=active]:border-b-purple-500 p-3 transition-all duration-300" value="signup">Signup</TabsTrigger>
               </TabsList>
               <TabsContent className="flex flex-col gap-5 mt-10" value="login">
 
-                <Input placeholder="Email" type="Email" className="rounded-full p-6" value={email} onChange={e=> setEmail(e.target.value)}></Input>
+                <Input placeholder="Email" type="email" className="rounded-full p-6" value={formState.email} onChange={(e) => handleInputChange("email", e.target.value)}></Input>
 
-                <Input placeholder="Password" type="Password" className="rounded-full p-6" value={password} onChange={e=> setPassword(e.target.value)}></Input>
+                <Input placeholder="Password" type="password" className="rounded-full p-6" value={formState.password} onChange={(e) => handleInputChange("password", e.target.value)}></Input>
 
-                <Button className="rounded-full p-6" onClick={handleLogin}>Login</Button>
+                <Button className="rounded-full p-6" onClick={handleSubmit}>Login</Button>
               </TabsContent>
 
               <TabsContent className="flex flex-col gap-5" value="signup">
 
-                <Input placeholder="Email" type="Email" className="rounded-full p-6" value={email} onChange={e=> setEmail(e.target.value)}></Input>
+                <Input placeholder="Email" type="Email" className="rounded-full p-6" value={formState.email} onChange={(e) => handleInputChange("email", e.target.value)}></Input>
 
-                <Input placeholder="Password" type="Password" className="rounded-full p-6" value={password} onChange={e=> setPassword(e.target.value)}></Input>
+                <Input placeholder="Password" type="Password" className="rounded-full p-6" value={formState.password} onChange={(e) => handleInputChange("password", e.target.value)}></Input>
 
-                <Input placeholder="Confirm Password" type="Password" className="rounded-full p-6" value={confirmPassword} onChange={e=> setConfirmPassword(e.target.value)}></Input>
+                <Input placeholder="Confirm Password" type="Password" className="rounded-full p-6" value={formState.confirmPassword} onChange={(e) => handleInputChange("confirmPassword", e.target.value)}></Input>
 
-                <Button className="rounded-full p-6" onClick={handleSignup}>Signup</Button>
+                <Button className="rounded-full p-6" onClick={handleSubmit}>Signup</Button>
 
               </TabsContent>
             </Tabs>
