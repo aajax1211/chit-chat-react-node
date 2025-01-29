@@ -97,7 +97,9 @@ export default function Profile() {
       if(file){
         const formData = new FormData()
         formData.append("profile-image",file)
-
+        console.log("File name: ", file.name);
+        console.log("File type: ", file.type);
+        console.log("File size: ", file.size);
         const response = await apiClient.post(ADD_PROFILE_IMAGE_ROUTE, formData,{withCredentials : true})
 
         if(response.status === 200 && response.data.image){
