@@ -9,7 +9,7 @@ export default function Chat() {
   const navigate = useNavigate()
 
   useEffect(()=>{
-    if(!userInfo.profile){
+    if(!userInfo.profileSetup){
       toast("Please setup profile to continue")
       navigate("/profile");
     }
