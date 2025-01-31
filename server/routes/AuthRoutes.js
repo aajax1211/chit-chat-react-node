@@ -16,8 +16,13 @@ const storage = multer.diskStorage({
         cb(null, 'uploads/profiles'); 
     },
     filename: function (req, file, cb) {
+        const fileExtension = path.extname(file.originalname); // Get file extension
+        const baseName = path.basename(file.originalname, fileExtension);
+        console.log("basename",baseName) // Get filename without extension
+        const encodedFilename = baseName.replace(/\s/g, '%20');
+        console.log("encodedfilename",encodedFilename) // Replace spaces with %20
         const date = Date.now();
-        cb(null, date + path.extname(file.originalname));
+        cb(null, `${encodedFilename}_${date}${fileExtension}`);
     }
 });
 

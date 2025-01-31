@@ -9,7 +9,7 @@ import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {toast} from "sonner";
 import {apiClient} from "@/lib/api-client";
-import {ADD_PROFILE_IMAGE_ROUTE, UPDATE_PROFILE_ROUTE} from "@/utils/constants";
+import {ADD_PROFILE_IMAGE_ROUTE, HOST, REMOVE_PROFILE_IMAGE_ROUTE, UPDATE_PROFILE_ROUTE} from "@/utils/constants";
 
 export default function Profile() {
 
@@ -64,7 +64,9 @@ export default function Profile() {
                 toast.success("Profile update Successfully")
                 navigate("/chat")
             }
-        } catch (error) {}
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     const handleNavigate = () => {
@@ -77,14 +79,20 @@ export default function Profile() {
 
     useEffect(() => {
         if (userInfo.profileSetup) {
+            const decodedImage = userInfo.image ? HOST + decodeURIComponent(userInfo.image) : null;
             setProfileDetails((prev) => ({
                 ...prev,
                 "firstName": userInfo.firstName,
                 "lastName": userInfo.lastName,
-                "selectedColor": userInfo.color
+                "selectedColor": userInfo.color,
+                "image" : decodedImage,
             }))
         }
     }, [userInfo])
+
+    useEffect(() => {
+        console.log("Updated profileDetails image: ", profileDetails.image);
+    }, [profileDetails.image]); 
 
     const handleFileInputCLick = () => {
         fileInputRef
@@ -103,8 +111,10 @@ export default function Profile() {
         const response = await apiClient.post(ADD_PROFILE_IMAGE_ROUTE, formData,{withCredentials : true})
 
         if(response.status === 200 && response.data.image){
-          setUserInfo({...userInfo, image : response.data.image})
-          toast.success("Image updated successfully")
+            const updatedImageUrl = `${HOST}${encodeURIComponent(response.data.image)}`;
+            setUserInfo({ ...userInfo, image: updatedImageUrl }); // Update userInfo state
+            toast.success("Image updated successfully");
+
         }
 
         const reader = new FileReader()
@@ -116,7 +126,19 @@ export default function Profile() {
       }
     }
 
-    const handleDeleteImage = async(e) => {}
+    const handleDeleteImage = async() => {
+        try {
+            const response = await apiClient.delete(REMOVE_PROFILE_IMAGE_ROUTE,{withCredentials:true})
+
+            if(response.status === 200){
+                setUserInfo({...userInfo,image: null})
+                toast.success("Image removed successfully")
+                handleChange("image", null)
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
     return (
         <div
             className="bg-[#1b1c24] h-[100vh] items-center flex justify-center flex-col gap-10">
