@@ -1,17 +1,32 @@
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
+import { apiClient } from "@/lib/api-client";
 import {getColor} from "@/lib/utils";
 import {useAppStore} from "@/store/store";
-import {HOST} from "@/utils/constants";
+import {HOST, LOGOUT_ROUTE} from "@/utils/constants";
 import {Avatar, AvatarImage} from "@radix-ui/react-avatar";
 import {FiEdit2} from "react-icons/fi";
 import {IoPowerSharp} from "react-icons/io5";
 import {useNavigate} from "react-router-dom";
+import { toast } from "sonner";
 
 export default function ProfileInfo() {
     const navigate = useNavigate()
-    const {userInfo} = useAppStore()
+    const {userInfo,setUserInfo} = useAppStore()
 
-    const logout = async () =>{}  
+    const logout = async () =>{
+
+        try {
+            const response = await apiClient.post(LOGOUT_ROUTE,{},{withCredentials : true})
+        if(response.status === 200){
+            toast.success("Logout Successful")
+            navigate("/auth")
+            setUserInfo()
+        }
+        } catch (error) {
+            console.log(error)
+        }
+        
+    }  
     return <div
         className="absolute bottom-0 h-16 flex justify-between items-center px-10 w-full bg-[#2a2b33]">
         <div className="flex gap-3 items-center justify-center">

@@ -20,8 +20,8 @@ export const getColor = (color) => {
   return colors[0]
 }
 
-// export const animationsDefaultOptions = {
-//   loop : true,
-//   autoplay: true,
-//   animationData
-// }
+export const animationsDefaultOptions = {
+  loop : true,
+  autoplay: true,
+  animationData
+}

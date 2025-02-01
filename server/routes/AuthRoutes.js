@@ -3,6 +3,7 @@ import {
     addProfileImage,
     getUserInfo,
     login,
+    logout,
     removeProfileImage,
     signup,
     updateProfile
@@ -34,6 +35,9 @@ authRoutes.post("/signup", signup)
 authRoutes.post("/login", login)
 authRoutes.post("/update-profile", verifyToken, updateProfile)
 authRoutes.post("/add-profile-image", verifyToken, upload.single("profile-image"), addProfileImage)
+authRoutes.post("/logout",logout)
+
+//Delete
 authRoutes.delete("/remove-profile-image", verifyToken, removeProfileImage)
 
 //GET

@@ -37,7 +37,7 @@ export const signup = async(request, response, next) => {
                 }
             })
     } catch (error) {
-        console.log(error)
+        
         return response
             .status(500)
             .send("Internal Server Error")
@@ -61,6 +61,7 @@ export const login = async(request, response, next) => {
         }
 
         const auth = await compare(password, user.password)
+        
         if (!auth) {
             return response
                 .status(400)
@@ -88,7 +89,7 @@ export const login = async(request, response, next) => {
                 }
             })
     } catch (error) {
-        console.log(error)
+       
         return response
             .status(500)
             .send("Internal Server Error")
@@ -117,7 +118,7 @@ export const getUserInfo = async(request, response, next) => {
 
             })
     } catch (error) {
-        console.log(error)
+      
         return response
             .status(500)
             .send("Internal Server Error")
@@ -127,11 +128,11 @@ export const getUserInfo = async(request, response, next) => {
 export const updateProfile = async(request, response, next) => {
     try {
         const {userId} = request;
-        console.log(userId)
+        
 
-        console.log(request.body)
+        
         const {firstName, lastName, color} = request.body
-        console.log(color)
+        
         if (!firstName || !lastName || !color) {
             return response
                 .status(404)
@@ -147,7 +148,7 @@ export const updateProfile = async(request, response, next) => {
             new: true,
             runValidators: true
         })
-        console.log(userData.email)
+        
         return response
             .status(200)
             .json({
@@ -161,7 +162,7 @@ export const updateProfile = async(request, response, next) => {
 
             })
     } catch (error) {
-        console.log(error)
+        
         return response
             .status(500)
             .send("Internal Server Error")
@@ -193,7 +194,7 @@ export const addProfileImage = async(request, response, next) => {
                 image: updatedUser.image,
             })
     } catch (error) {
-        console.log(error)
+       
         return response
             .status(500)
             .send("Internal Server Error")
@@ -218,7 +219,21 @@ export const removeProfileImage = async(request, response, next) => {
 
         return response.status(200).send("Profile Image Removed successfully")
     } catch (error) {
-        console.log(error)
+       
+        return response
+            .status(500)
+            .send("Internal Server Error")
+    }
+}
+
+
+export const logout = async(request, response, next) => {
+    try {
+        response.cookie("jwt","", {maxAge:1,secure:true , sameSite: "None"})
+
+        return response.status(200).send("Logout Successful")
+    } catch (error) {
+        
         return response
             .status(500)
             .send("Internal Server Error")
