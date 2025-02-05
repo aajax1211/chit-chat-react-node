@@ -10,12 +10,13 @@ import {
   } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input";
 import Lottie from "react-lottie";
-import { animationsDefaultOptions, getColor } from "@/lib/utils";
+import { getColor } from "@/lib/utils";
 import { apiClient } from "@/lib/api-client";
 import { HOST, SEARCH_CONTACTS_ROUTES } from "@/utils/constants";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import { useAppStore } from "@/store/store";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
   
 
 
@@ -73,14 +74,9 @@ export default function NewDM() {
     <div>
         <Input  placeholder="Search Contact" className="rounded-lg p-6 bg-[#2c2e3b] border-none" onChange={(e) => searchContacts(e.target.value)}></Input>
     </div>
-    
-    {searchList.length <= 0 ?
-    <Lottie 
-    isClickToPauseDisabled={true}
-    height={200}
-    width={200}
-    options={animationsDefaultOptions}
-    ></Lottie>: <ScrollArea className="h-[250px]">
+
+    {searchList.length > 0 && 
+    <ScrollArea className="h-[250px]">
     <div className="flex flex-col gap-5">
         {searchList.map(contact => (
             <div key={contact._id} className="flex gap-3 items-center cursor-pointer" onClick={() => selectNewContact(contact)}>
@@ -117,7 +113,16 @@ export default function NewDM() {
             </div>
         ) )}
     </div>
-</ScrollArea> }
+</ScrollArea>}
+    
+    {searchList.length <= 0 &&
+    <DotLottieReact
+    src="https://lottie.host/56e44ee5-8892-40b0-bc2f-fc77b74fc6ab/PruaSLeczc.lottie"
+    width={200}
+    height={100}
+    loop
+    autoplay
+  /> }
   </DialogContent>
 </Dialog>
 

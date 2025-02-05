@@ -6,6 +6,7 @@ import mongoose from "mongoose"
 import authRoutes from "./routes/AuthRoutes.js"
 import path  from 'path';
 import { contactRoutes } from "./routes/ContactRoutes.js"
+import { setupSocket } from "./socket.js"
 
 
 dontenv.config();
@@ -40,3 +41,5 @@ const server = app.listen(port, () => {
 }).on('error', (err) => {
     console.error('Error starting the server:', err);
 });
+
+setupSocket()
