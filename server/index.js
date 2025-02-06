@@ -42,4 +42,4 @@ const server = app.listen(port, () => {
     console.error('Error starting the server:', err);
 });
 
-setupSocket()
+setupSocket(server)
