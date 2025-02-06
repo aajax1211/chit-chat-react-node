@@ -24,20 +24,24 @@ export const setupSocket = (server) =>{
     }
 
     const sendMessage = async (message) => {
+        console.log("Received message on server:", message);
         const createdMessage = await  Messages.create(message)
         const senderSocketId = userSocketMap.get(message.sender)
         const recipientSocketId = userSocketMap.get(message.recipient)
 
-
+        console.log("Saved to DB:", createdMessage);
         
 
         const messageData = await Messages.findById(createdMessage._id).populate("sender","id email firstName lastName image color").populate("recipient","id email firstName lastName image color")
 
+        console.log("Emitting message to recipient:", recipientSocketId);
+        console.log("Emitting message to sender:", senderSocketId);
+
         if(recipientSocketId){
-            io.to(recipientSocketId).emit("recieveMessage",messageData)
+            io.to(recipientSocketId).emit("receiveMessage",messageData)
         }
         if(senderSocketId){
-            io.to(senderSocketId).emit("recieveMessage",messageData)
+            io.to(senderSocketId).emit("receiveMessage",messageData)
         }
     }
 

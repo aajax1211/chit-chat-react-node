@@ -18,15 +18,24 @@ const messageSchema = new mongoose.Schema({
     },
     content :{
         type : String,
-        required: function(){
-            return this.messageType === "text"
+        
+        validate: {
+            validator: function (value) {
+                return this.messageType !== "text" || (value && value.trim().length > 0);
+            },
+            message: "Content is required when messageType is 'text'."
         },
+        
     },
     fileUrl: {
-        type : String,
-        required : function (){
-            return this.messageType === "file"
-        } 
+        type: String,
+    
+        validate: {
+            validator: function (value) {
+                return this.messageType !== "file" || (value && value.trim().length > 0);
+            },
+            message: "File URL is required when messageType is 'file'."
+        }
     },
     timeStamp:{
         type : Date,

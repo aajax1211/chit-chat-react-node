@@ -1,7 +1,7 @@
 import { useSocket } from "@/context/socketContext";
 import { useAppStore } from "@/store/store";
 import EmojiPicker from "emoji-picker-react";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {GrAttachment} from "react-icons/gr"
 import { IoSend } from "react-icons/io5";
 import { RiEmojiStickerLine } from "react-icons/ri";
@@ -19,8 +19,12 @@ export default function MessageBar() {
     }
 
     const handleSendMessage = async ()=>{
+        if(!message || message === undefined){
+            return
+        }
         if(selectedChatType === "contact"){
             if(selectedChatType === "contact"){
+                console.log("Message:", message);
                 socket.emit("sendMessage",{
                     sender: userInfo.id,
                     content : message,

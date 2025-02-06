@@ -1,4 +1,4 @@
-import React from "react";
+/* eslint-disable react/prop-types */
 import ProfileInfo from "./Components/ProfileInfo";
 import NewDM from "./Components/NewDM";
 
