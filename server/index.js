@@ -29,6 +29,7 @@ app.use(cors({
 }))
 
 app.use('/uploads', express.static(path.resolve('uploads')));
+app.use("/uploads/files", express.static("uploads/files"))
 
 app.use(cookieParser())
 app.use(express.json())
