@@ -37,7 +37,8 @@ export const uploadFile = async(request, response, next) => {
         let filename = `${fileDir}/${request.file.originalname}`
 
         mkdirSync(fileDir,{recursive : true })
-
+        console.log(
+            "file-upload-issue ",request.file, typeof request.file)
         renameSync(request.file.path,filename)
         return response.status(200).json({filePath : filename})
 
