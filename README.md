@@ -93,7 +93,7 @@ cd ../client
 npm install
 ```
 
-### Configure Environment
+### 2. Configure Environment
 ```
   In server/.env:
 
